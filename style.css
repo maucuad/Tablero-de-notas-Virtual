@@ -1,0 +1,813 @@
+/* --- VARIABLES DE TEMA (MODO CLARO POR DEFECTO) --- */
+:root {
+    --bg-color: #b59e6a;
+    --text-color: #3e2723;
+    --header-bg: transparent;
+    --column-bg: #c8a276;
+    --column-border: #b58d63;
+    --column-title: #3e2723;
+    --note-bg: #fff9c4;
+    --modal-bg: #f5deb3;
+    --modal-border: #b58d63;
+    --input-bg: #ffffff;
+    --input-text: #000000;
+}
+
+/* --- VARIABLES PARA MODO OSCURO --- */
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --column-bg: #1e1e1e;
+    --column-border: #333333;
+    --column-title: #ffffff;
+    --note-bg: #2d2d2d;
+    --modal-bg: #1f1f1f;
+    --modal-border: #444444;
+    --input-bg: #2a2a2a;
+    --input-text: #ffffff;
+}
+
+/* --- ESTILOS GENERALES --- */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+header h1 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+/* Botón de cambio de modo oscuro/claro */
+#theme-toggle-btn {
+    background: none;
+    border: 2px solid var(--column-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--modal-bg);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#theme-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+/* --- TABLERO Y COLUMNAS --- */
+#board-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.column {
+    background-color: var(--column-bg);
+    border: 1px solid var(--column-border);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 0;
+}
+
+.column h2 {
+    font-size: 1.1rem;
+    color: var(--column-title);
+    text-align: center;
+    margin-top: 0;
+    border-bottom: 2px solid var(--column-border);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 200px;
+}
+
+/* --- TARJETAS DE NOTAS (POST-ITS) --- */
+.note {
+    background-color: var(--note-bg);
+    color: #3e2723; /* Mantenemos el texto oscuro en las notas para legibilidad tipo Post-it */
+    padding: 12px;
+    border-radius: 2px;
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    word-break: break-word;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 5px;
+    background-color: rgba(255,255,255,0.5);
+}
+
+.action-btn:hover {
+    background-color: #fff;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #c62828;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.note-content {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.note-details {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 2px;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+    padding-top: 4px;
+}
+
+.note-subcategory-badge {
+    font-size: 0.7rem;
+    background-color: rgba(0,0,0,0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    align-self: flex-start;
+    font-weight: 600;
+    color: #444;
+}
+
+.note-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.note-tag {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #3e2723;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* --- BOTÓN FLOTANTE (FAB) --- */
+#fab-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 100;
+}
+
+#fab-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+}
+
+/* --- MODAL / FORMULARIO FLOTANTE --- */
+#form-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.form-hidden {
+    display: none !important;
+}
+
+.form-box {
+    background-color: var(--modal-bg);
+    color: var(--text-color);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 340px;
+    border: 2px solid var(--modal-border);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-box h3 {
+    margin: 0 0 5px 0;
+    text-align: center;
+}
+
+.form-box label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-box input, 
+.form-box select {
+    padding: 9px;
+    font-size: 0.95rem;
+    border: 1px solid var(--modal-border);
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+#subcategory-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+#add-btn {
+    flex: 2;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#add-btn:hover {
+    background-color: #45a049;
+}
+
+#close-btn {
+    flex: 1;
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#close-btn:hover {
+    background-color: #c62828;
+}
+
+/* --- ESTILOS PARA LA BARRA DE BÚSQUEDA --- */
+#search-container {
+    flex: 1;
+    max-width: 350px;
+    margin: 0 20px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 2px solid var(--column-border);
+    border-radius: 20px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+#search-input:focus {
+    border-color: #4CAF50;
+}
+
+/* Clase para ocultar notas cuando no coinciden con la búsqueda */
+.note-hidden {
+    display: none !important;
+}
+
+/* --- ESTILOS PARA LA CASILLA DE VERIFICACIÓN (CHECKLIST) --- */
+.note-checkbox {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.note.completed {
+    opacity: 0.8;
+    background-color: #2e4d3d !important; /* Un verde oscuro elegante para modo claro */
+}
+
+/* Si está activo el modo oscuro, ajustamos el fondo completado */
+.dark-mode .note.completed {
+    background-color: #162920 !important;
+}
+
+/* Al estar completada, el texto, detalles y etiquetas se vuelven claros para mejorar la visibilidad */
+.note.completed .note-content,
+.note.completed .note-details,
+.note.completed .note-tag,
+.note.completed .note-subcategory-badge {
+    color: #e0e0e0 !important;
+}
+
+.note.completed .note-content {
+    text-decoration: line-through;
+    opacity: 0.85;
+}
+
+/* --- ESTILOS PARA EDICIÓN EN LÍNEA --- */
+.note-content.editing,
+.note-details.editing {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px dashed #4CAF50;
+    padding: 2px 4px;
+    border-radius: 3px;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* --- ESTILOS PARA PRIORIDADES Y FECHAS DE VENCIMIENTO --- */
+.note-meta-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .note-meta-container {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Indicadores visuales de prioridad */
+.priority-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+}
+
+.priority-alta {
+    background-color: #d32f2f; /* Rojo */
+}
+
+.priority-media {
+    background-color: #f57c00; /* Naranja */
+}
+
+.priority-baja {
+    background-color: #388e3c; /* Verde */
+}
+
+/* Insignia de fecha de vencimiento con texto oscuro asegurado */
+.due-date-badge {
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #3e2723; /* Texto oscuro fijo */
+}
+
+.dark-mode .due-date-badge {
+    background-color: rgba(255, 255, 255, 0.25); /* Fondo un poco más claro para contraste */
+    color: #121212 !important; /* Texto oscuro forzado en modo oscuro */
+}
+
+/* --- ESTILOS PARA LOS BOTONES DE BACKUP --- */
+#backup-container {
+    display: flex;
+    gap: 8px;
+    margin-right: 10px;
+}
+
+#export-btn, #import-btn {
+    background: none;
+    border: 2px solid var(--column-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--modal-bg);
+    color: var(--text-color);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#export-btn:hover, #import-btn:hover {
+    transform: scale(1.1);
+}
+
+/* --- ESTILOS PARA ENLACES AUTOMÁTICOS --- */
+.note-details a {
+    color: inherit; /* Hereda exactamente el color del texto de la nota */
+    text-decoration: underline;
+    word-break: break-all;
+    font-weight: 600; /* Un pequeño toque para que resalte ligeramente */
+}
+
+.note-details a:hover {
+    opacity: 0.7;
+}
+
+/* --- ESTILOS PARA EL SELECTOR DE COLOR --- */
+#note-color {
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+#note-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#note-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+/* --- ESTILOS PARA NOTAS CON FONDO OSCURO PERSONALIZADO --- */
+.note.dark-bg-note .note-content,
+.note.dark-bg-note .note-details,
+.note.dark-bg-note .note-details a,
+.note.dark-bg-note .note-tag,
+.note.dark-bg-note .note-subcategory-badge,
+.note.dark-bg-note .due-date-badge {
+    color: #f5f5f5 !important;
+}
+
+.note.dark-bg-note .due-date-badge {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* --- ESTILOS PARA LA PAPELERA DE RECICLAJE --- */
+#trash-bin-btn {
+    background: none;
+    border: 2px solid var(--column-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--modal-bg);
+    color: var(--text-color);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#trash-bin-btn:hover {
+    transform: scale(1.1);
+}
+
+.trash-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--column-border);
+    gap: 10px;
+}
+
+.trash-item-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.trash-item-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trash-item-category {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+
+.trash-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.restore-btn {
+    background-color: #388e3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.permanent-delete-btn {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* --- ESTILOS PARA LA VISTA DE CALENDARIO --- */
+.calendar-day-cell {
+    background-color: var(--modal-bg);
+    border: 1px solid var(--column-border);
+    border-radius: 6px;
+    min-height: 100px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.calendar-day-header {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: right;
+    opacity: 0.7;
+}
+
+.calendar-day-number {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.calendar-note-chip {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    border-left: 3px solid #1976d2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.calendar-note-chip:hover {
+    opacity: 0.8;
+}
+
+.calendar-header-names {
+    font-weight: bold;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}/* --- ESTILOS PARA LA VISTA DE CALENDARIO --- */
+.calendar-day-cell {
+    background-color: var(--modal-bg);
+    border: 1px solid var(--column-border);
+    border-radius: 6px;
+    min-height: 100px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.calendar-day-header {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: right;
+    opacity: 0.7;
+}
+
+.calendar-day-number {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.calendar-note-chip {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    border-left: 3px solid #1976d2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.calendar-note-chip:hover {
+    opacity: 0.8;
+}
+
+.calendar-header-names {
+    font-weight: bold;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* --- ESTILO CIRCULAR PARA EL BOTÓN DE VISTA DE CALENDARIO --- */
+#view-toggle-btn {
+    background: none;
+    border: 2px solid var(--column-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--modal-bg);
+    color: var(--text-color);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#view-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+/* --- CONTROL DE VISTAS POR CLASE EN EL BODY --- */
+body.calendar-active #board {
+    display: none !important;
+}
+
+body.calendar-active #calendar-view {
+    display: block !important;
+}
+/* --- CORRECCIÓN DE CONTRASTE PARA LA VISTA DE CALENDARIO --- */
+body.dark-mode #calendar-view h2,
+body.dark-mode .calendar-header-names,
+body.dark-mode .calendar-day-number {
+    color: var(--text-color) !important;
+}
+
+body.dark-mode .calendar-day-cell {
+    background-color: var(--modal-bg) !important;
+    border-color: var(--column-border) !important;
+}
+
+/* Forzar letras oscuras en los números y cabeceras del calendario en cualquier modo */
+.calendar-day-number,
+.calendar-header-names,
+#calendar-month-title {
+    color: #121212 !important;
+}
+
+body.dark-mode .calendar-day-number,
+body.dark-mode .calendar-header-names,
+body.dark-mode #calendar-month-title {
+    color: #f5f5f5 !important;
+}
+/* --- COLOR OSCURO PARA LAS LETRAS EN LAS NOTAS DEL CALENDARIO --- */
+.calendar-note-chip {
+    color: #121212 !important;
+    font-weight: 600;
+}
+/* --- ESTILOS PARA IMÁGENES EN LAS NOTAS --- */
+.note-image-container {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+    max-height: 180px;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.note-image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    max-height: 180px;
+}
+/* --- ESTILO MEJORADO PARA EL SELECTOR DE COLOR --- */
+#note-color {
+    -webkit-appearance: none;
+    border: 1px solid var(--column-border) !important;
+    border-radius: 6px !important;
+    width: 60px !important;
+    height: 38px !important;
+    padding: 2px !important;
+    background-color: var(--input-bg) !important;
+}
+
+#note-color::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+#note-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+#note-color::-moz-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+/* --- ESTILOS PARA MÚLTIPLES IMÁGENES EN LAS NOTAS --- */
+.note-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.note-image-thumb {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    display: block;
+}
+
+/* --- ESTILOS PARA EL VISOR DE IMÁGENES --- */
+#image-viewer-modal.form-hidden {
+    display: none !important;
+}
+
+#board-select:hover, #new-board-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    transition: all 0.2s;
+}

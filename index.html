@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Corcho Virtual</title>
+    <!-- Importar la fuente Montserrat desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Enlazamos nuestro archivo CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>📌 Mi Tablero de Notas</h1>
+
+        <!-- Controles de Tableros -->
+        <div id="board-selector-container" style="display: flex; align-items: center; gap: 8px;">
+            <select id="board-select" title="Seleccionar tablero" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--column-border); background-color: var(--modal-bg); color: var(--text-color); cursor: pointer; font-size: 0.9rem;">
+                <!-- Se llena dinámicamente -->
+            </select>
+            <button id="new-board-btn" title="Crear un nuevo tablero" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--column-border); background-color: var(--modal-bg); color: var(--text-color); cursor: pointer; font-size: 0.9rem;">➕ Nuevo Tablero</button>
+        </div>
+        
+        <!-- Barra de búsqueda en tiempo real -->
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="🔍 Buscar notas o etiquetas...">
+        </div>
+
+        <!-- Botones de Respaldo, Papelera y Vista -->
+        <div id="backup-container">
+            <button id="export-btn" title="Exportar notas (Backup JSON)">📤</button>
+            <button id="import-btn" title="Importar notas desde archivo">📥</button>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+            <button id="trash-bin-btn" title="Papelera de reciclaje">🗑️</button>
+            <button id="view-toggle-btn" title="Cambiar a Vista de Calendario">📅</button>
+        </div>
+
+        <!-- Botón para alternar el modo oscuro/claro -->
+        <button id="theme-toggle-btn" title="Cambiar modo oscuro/claro">🌙</button>
+    </header>
+
+    <main>
+        <!-- Tablero dividido en columnas por categorías -->
+        <section id="board-columns">
+            <div class="column" data-category="proyecto">
+                <h2>Proyectos</h2>
+                <div class="notes-container" id="container-proyecto"></div>
+            </div>
+            <div class="column" data-category="idea">
+                <h2>Ideas</h2>
+                <div class="notes-container" id="container-idea"></div>
+            </div>
+            <div class="column" data-category="tarea">
+                <h2>Tareas</h2>
+                <div class="notes-container" id="container-tarea"></div>
+            </div>
+            <div class="column" data-category="contenido">
+                <h2>Contenido</h2>
+                <div class="notes-container" id="container-contenido"></div>
+            </div>
+            <div class="column" data-category="otro">
+                <h2>Otros</h2>
+                <div class="notes-container" id="container-otro"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Contenedor de la Vista de Calendario (Oculto por defecto) -->
+    <main id="calendar-view" style="display: none; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="calendar-month-title" style="color: var(--text-color);">Calendario de Vencimientos</h2>
+            <div style="display: flex; gap: 10px;">
+                <button id="prev-month-btn" style="padding: 6px 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--column-border); background: var(--modal-bg); color: var(--text-color);">◀ Mes Anterior</button>
+                <button id="next-month-btn" style="padding: 6px 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--column-border); background: var(--modal-bg); color: var(--text-color);">Mes Siguiente ▶</button>
+            </div>
+        </div>
+        <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">
+            <!-- Los días del calendario se generan dinámicamente -->
+        </div>
+    </main>
+
+    <!-- Contenedor del formulario flotante (Modal) -->
+    <div id="form-container" class="form-hidden">
+        <div class="form-box">
+            <h3>Nueva Nota</h3>
+            
+            <label for="note-input">Título / Nota principal:</label>
+            <input type="text" id="note-input" placeholder="Escribe tu nota aquí...">
+
+            <label for="note-details">Detalles / Notas (Opcional):</label>
+            <input type="text" id="note-details" placeholder="Notas adicionales o enlace...">
+
+            <label for="note-options">Categoría principal:</label>
+            <select name="options" id="note-options">
+                <option value="proyecto">Proyecto</option>
+                <option value="idea">Idea</option>
+                <option value="tarea">Tarea</option>
+                <option value="contenido">Contenido</option>
+                <option value="otro">Otro</option>
+            </select>
+
+            <!-- Selector de Subcategorías (aparece si es Contenido) -->
+            <div id="subcategory-wrapper" style="display: none;">
+                <label for="note-subcategory">Subcategoría de Contenido:</label>
+                <select name="subcategory" id="note-subcategory">
+                    <option value="Musica">Música</option>
+                    <option value="Video">Video</option>
+                    <option value="Pelicula / Serie">Película / Serie</option>
+                    <option value="Libro">Libro</option>
+                    <option value="Pagina Web / Programa">Página Web / Programa</option>
+                    <option value="Juego">Juego</option>
+                </select>
+            </div>
+
+            <!-- Prioridad opcional -->
+            <label for="note-priority">Prioridad:</label>
+            <select name="priority" id="note-priority">
+                <option value="baja">Baja</option>
+                <option value="media" selected>Media</option>
+                <option value="alta">Alta</option>
+            </select>
+
+            <!-- Fecha de vencimiento opcional -->
+            <label for="note-due-date">Fecha de Vencimiento (Opcional):</label>
+            <input type="date" id="note-due-date">
+
+            <!-- Selector de color personalizado -->
+            <label for="note-color">Color de nota (Opcional):</label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <input type="color" id="note-color" value="#fff9c4" style="cursor: pointer; background: none; border: none; width: 50px; height: 35px; padding: 0;">
+                <span style="font-size: 0.8rem; opacity: 0.7;">Haz clic para elegir un tono</span>
+            </div>
+
+            <!-- Selector de Múltiples Imágenes -->
+            <label for="note-image">Imágenes adjuntas (Opcional, puedes elegir varias):</label>
+            <input type="file" id="note-image" accept="image/*" multiple style="margin-bottom: 12px; font-size: 0.85rem; width: 100%;">
+
+            <!-- Etiquetas -->
+            <label for="note-tags">Etiquetas (separadas por comas o #):</label>
+            <input type="text" id="note-tags" placeholder="ej. urgente, trabajo, #idea">
+
+
+            <div class="form-buttons">
+                <button id="add-btn">Insertar</button>
+                <button id="close-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante -->
+    <button id="fab-btn" title="Nueva Nota (+)">+</button>
+
+   <!-- Contenedor del Modal para ver Imágenes en Grande con Navegación -->
+    <div id="image-viewer-modal" class="form-hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 2000;">
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <button id="close-image-viewer" style="position: absolute; top: -45px; right: 0; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; z-index: 2010;" title="Cerrar">&times;</button>
+            
+            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                <!-- Botón Izquierda -->
+                <button id="prev-image-btn" style="position: absolute; left: -50px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 2rem; padding: 10px 15px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Imagen anterior">‹</button>
+                
+                <img id="full-size-image" src="" alt="Imagen ampliada" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                
+                <!-- Botón Derecha -->
+                <button id="next-image-btn" style="position: absolute; right: -50px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 2rem; padding: 10px 15px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Siguiente imagen">›</button>
+            </div>
+            
+            <!-- Indicador de posición (ej. 1 de 3) -->
+            <div id="image-counter" style="color: white; margin-top: 12px; font-size: 0.9rem; opacity: 0.8;"></div>
+        </div>
+    </div>
+
+    <!-- Contenedor del Modal de la Papelera -->
+    <div id="trash-modal" class="form-hidden">
+        <div class="form-box" style="max-width: 600px; max-height: 80vh; display: flex; flex-direction: column;">
+            <h3>🗑️ Papelera de Reciclaje</h3>
+            <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px;">Aquí se encuentran las notas eliminadas. Puedes restaurarlas o borrarlas definitivamente.</p>
+            
+            <div id="trash-list-container" style="flex-grow: 1; overflow-y: auto; max-height: 400px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding-right: 5px;">
+                <!-- Las notas eliminadas aparecerán aquí dinámicamente -->
+            </div>
+
+            <div class="form-buttons">
+                <button id="empty-trash-btn" style="background-color: #d32f2f; color: white;">Vaciar Papelera</button>
+                <button id="close-trash-btn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlazamos nuestro archivo JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
